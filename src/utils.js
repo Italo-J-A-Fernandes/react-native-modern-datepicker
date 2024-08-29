@@ -1,33 +1,34 @@
 import {useRef, useState} from 'react';
 import {Animated, Easing, I18nManager} from 'react-native';
-import moment from 'moment-jalaali';
+import moment from 'moment';
+moment.locale('pt-br');
 
 const m = moment();
-const jalaaliConfigs = {
-  dayNames: ['شنبه', 'یکشنبه', 'دوشنبه', 'سه شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'],
-  dayNamesShort: ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
+const ptBrConfigs = {
+  dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+  dayNamesShort: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
   monthNames: [
-    'فروردین',
-    'اردیبهشت',
-    'خرداد',
-    'تیر',
-    'مرداد',
-    'شهریور',
-    'مهر',
-    'آبان',
-    'آذر',
-    'دی',
-    'بهمن',
-    'اسفند',
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agost',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
   ],
-  selectedFormat: 'jYYYY/jMM/jDD',
-  dateFormat: 'jYYYY/jMM/jDD',
-  monthYearFormat: 'jYYYY jMM',
+  selectedFormat: 'DD/MM/YYYY',
+  dateFormat: 'DD/MM/YYYY',
+  monthYearFormat: 'MM YYYY',
   timeFormat: 'HH:mm ',
-  hour: 'ساعت',
-  minute: 'دقیقه',
-  timeSelect: 'انتخاب',
-  timeClose: 'بستن',
+  hour: 'Hora',
+  minute: 'Minuto',
+  timeSelect: 'Select',
+  timeClose: 'Close',
 };
 const gregorianConfigs = {
   dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -64,7 +65,7 @@ class utils {
       isGregorian,
       reverse: reverse === 'unset' ? !isGregorian : reverse,
     };
-    this.config = isGregorian ? gregorianConfigs : jalaaliConfigs;
+    this.config = isGregorian ? gregorianConfigs : ptBrConfigs;
     this.config = {...this.config, ...configs};
     if (mode === 'time' || mode === 'datepicker') {
       this.config.selectedFormat = this.config.dateFormat + ' ' + this.config.timeFormat;
@@ -79,29 +80,29 @@ class utils {
 
   getFormatedDate = (date = new Date(), format = 'YYYY/MM/DD') => moment(date).format(format);
 
-  getTime = (time) => this.getDate(time).format(this.config.timeFormat);
+  getTime = time => this.getDate(time).format(this.config.timeFormat);
 
   getToday = () => this.getFormated(m, 'dateFormat');
 
-  getMonthName = (month) => this.config.monthNames[month];
+  getMonthName = month => this.config.monthNames[month];
 
-  toPersianNumber = (value) => {
+  toPersianNumber = value => {
     const {isGregorian} = this.data;
     return isGregorian
       ? this.toEnglish(String(value))
-      : String(value).replace(/[0-9]/g, (w) =>
+      : String(value).replace(/[0-9]/g, w =>
           String.fromCharCode(w.charCodeAt(0) + '۰'.charCodeAt(0) - 48),
         );
   };
 
-  toEnglish = (value) => {
+  toEnglish = value => {
     const charCodeZero = '۰'.charCodeAt(0);
-    return value.replace(/[۰-۹]/g, (w) => w.charCodeAt(0) - charCodeZero);
+    return value.replace(/[۰-۹]/g, w => w.charCodeAt(0) - charCodeZero);
   };
 
-  getDate = (time) => moment(time, this.config.selectedFormat);
+  getDate = time => moment(time, this.config.selectedFormat);
 
-  getMonthYearText = (time) => {
+  getMonthYearText = time => {
     const {isGregorian} = this.data;
     const date = this.getDate(time);
     const year = this.toPersianNumber(isGregorian ? date.year() : date.jYear());
@@ -109,7 +110,7 @@ class utils {
     return `${month} ${year}`;
   };
 
-  checkMonthDisabled = (time) => {
+  checkMonthDisabled = time => {
     const {minimumDate, maximumDate, isGregorian} = this.data;
     const date = this.getDate(time);
     let disabled = false;
@@ -160,7 +161,7 @@ class utils {
     return validDate;
   };
 
-  getMonthDays = (time) => {
+  getMonthDays = time => {
     const {minimumDate, maximumDate, isGregorian} = this.data;
     let date = this.getDate(time);
     const currentMonthDays = isGregorian
@@ -196,7 +197,7 @@ class utils {
     const [changeWay, setChangeWay] = useState(null);
     const monthYearAnimation = useRef(new Animated.Value(0)).current;
 
-    const changeMonthAnimation = (type) => {
+    const changeMonthAnimation = type => {
       setChangeWay(type);
       setLastDate(activeDate);
       monthYearAnimation.setValue(1);
